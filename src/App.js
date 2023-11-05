@@ -2,7 +2,7 @@ import { useState } from 'react';
 import {
   EtherspotBatch,
   EtherspotBatches,
-  EtherspotTransaction,
+  EtherspotContractTransaction,
   useEtherspotTransactions,
   useWalletAddress,
 } from '@etherspot/transaction-kit';
@@ -17,7 +17,6 @@ function App() {
   const [address, setAddress] = useState(
     '0x271Ae6E03257264F0F7cb03506b12A027Ec53B31'
   );
-  const [amount, setAmount] = useState('0.00001');
   const [latestEstimationData, setLatestEstimationData] = useState(null);
   const [latestSendData, setLatestSendData] = useState(null);
 
@@ -56,16 +55,9 @@ function App() {
    * blockchain.
    */
   const runSend = async () => {
-    // We must always estimate first.
-    if (!latestEstimationData) {
-      alert(
-        'You must always estimate successfully before sending. This ensures that the transaction cost is up to date and validated.\n\nPlease try to estimate and send again.'
-      );
-
-      return;
-    }
 
     // Lets send this transaction!
+    await estimate();
     const sendResult = await send();
     console.log('Send Data:', sendResult);
 
@@ -96,7 +88,10 @@ function App() {
           }}
         >
           <EtherspotBatch chainId={80001}>
-            <EtherspotTransaction to={address} value={amount}>
+            <EtherspotContractTransaction 
+              to={address} 
+              value={amount}>
+                
               <p className="App-info">
                 This is the destination blockchain address. Always remember that
                 the blockchain address you are sending to must ALWAYS be on the
@@ -114,26 +109,6 @@ function App() {
                   type="text"
                   value={address}
                   onChange={e => setAddress(e.target.value)}
-                />
-              </div>
-
-              <p className="App-info">
-                Below is the amount of Test MATIC we are going to send to the
-                above address. Keep the amount small so you can run this example
-                several times, or you'll need to head back to the Polygon Faucet
-                to get more Test MATIC.
-              </p>
-
-              <div className="App-form-control">
-                <label className="App-label" htmlFor="amountInput">
-                  Test MATIC Amount
-                </label>
-                <input
-                  className="App-text-input"
-                  id="amountInput"
-                  type="text"
-                  value={amount}
-                  onChange={e => setAmount(e.target.value)}
                 />
               </div>
 
@@ -173,7 +148,7 @@ function App() {
                   Send
                 </button>
               </div>
-            </EtherspotTransaction>
+            </EtherspotContractTransaction>
           </EtherspotBatch>
         </EtherspotBatches>
       </header>
