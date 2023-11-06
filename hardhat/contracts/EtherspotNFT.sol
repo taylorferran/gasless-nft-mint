@@ -56,13 +56,14 @@ contract EtherspotNFT is ERC1155, Ownable {
         _;
     }
 
+    // TODO 
     /// @dev Change ipfs link to the one we want // "https://ipfs.io/ipfs/QmVCPmxzCR4rB636Ghh5PqXfy56XNJ6NGY5oHr6Hjeso8X/{id}.json"
-    constructor(string memory _ipfsLink) ERC1155(_ipfsLink) Ownable(msg.sender){
+    constructor() ERC1155("https://ipfs.io/ipfs/QmVCPmxzCR4rB636Ghh5PqXfy56XNJ6NGY5oHr6Hjeso8X/{id}.json") Ownable(msg.sender){
         
     }
 
     /// @param _targetAddress Wallet address to mint 
-    function mint(address _targetAddress) external payable IsMintActive {
+    function mint(address _targetAddress) external IsMintActive {
         if( (this.balanceOf(_targetAddress, 1)) > 0)
         revert AddressAlreadyHasNFT();
         numberOfTokensMinted++;

@@ -81,17 +81,15 @@ function App() {
         </p>
         <p className="App-wallet-address">{etherspotAddress}</p>
         <EtherspotBatches
-            paymaster={{
-            url: "https://arka.etherspot.io",
-            api_key: "arka_public_key",
-            context: { mode: "sponsor" }
-          }}
         >
           <EtherspotBatch chainId={80001}>
             <EtherspotContractTransaction 
-              to={address} 
-              value={amount}>
-                
+            contractAddress={'0x09C84f517E3Ff7347b2902b3055Bb4ac90745f3b'}
+            abi={['function mint(address)']}
+            methodName={'mint'}
+            params={['0xa8430797A27A652C03C46D5939a8e7698491BEd6']}
+            value={'0'} 
+            >
               <p className="App-info">
                 This is the destination blockchain address. Always remember that
                 the blockchain address you are sending to must ALWAYS be on the
@@ -141,11 +139,8 @@ function App() {
               )}
 
               <div className="App-form-buttons-control">
-                <button onClick={runEstimation} color="primary">
-                  Estimate
-                </button>
                 <button onClick={runSend} color="success">
-                  Send
+                  Mint NFT
                 </button>
               </div>
             </EtherspotContractTransaction>
