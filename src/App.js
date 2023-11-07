@@ -15,48 +15,36 @@ function App() {
   const etherspotAddress = useWalletAddress();
   const { estimate, send } = useEtherspotTransactions();
   const [address, setAddress] = useState(
-    '0x271Ae6E03257264F0F7cb03506b12A027Ec53B31'
+    '0x0000000000000000000000000000000000000000'
   );
+  console.log(address);
+
+  console.log(address);
+
   const [latestEstimationData, setLatestEstimationData] = useState(null);
   const [latestSendData, setLatestSendData] = useState(null);
 
-  const runEstimation = async () => {
-    // Reset the latest send data
-    setLatestSendData(null);
+  const whitelistAddressAndMintNFT = async () => {
 
-    // Perform the estimation
-    const estimationData = await estimate();
-    console.log('Estimation Data:', estimationData);
+    const addresses = [etherspotAddress];
+    const api_key = 'gasless_mint_demo';
+    const chainId = 80001;
+    const returnedValue = await fetch('https://arka.etherspot.io/whitelist', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ "params": [addresses, chainId, api_key] })
+    })
+      .then((res) => {
+        return res.json()
+      }).catch((err) => {
+        console.log(err);
+      });
 
-    /**
-     * Sometimes the estimation fails. If the estimation fails,
-     * it usually means the transaction could not be validated and
-     * something, usually the transaction values, were invalid.
-     */
-    if (JSON.stringify(estimationData).includes('reverted')) {
-      alert(
-        'Sorry, an estimation error occured. This may happen if:\n\n- The address or amount entered were invalid\n- Your Etherspot Smart Wallet account has no funds\n\nPlease check these points and try again.'
-      );
+	  console.log('Value returned: ', returnedValue);
 
-      return;
-    }
-
-    /**
-     * Otherwise, we have a successful estimation! Lets set it
-     * so we can display / yse it later.
-     */
-    setLatestEstimationData(estimationData);
-  };
-
-  /**
-   * The send method will now submit this transaction to
-   * Etherspot. Etherspot will queue, submit and monitor your
-   * transaction to ensure that it eventually reaches the
-   * blockchain.
-   */
-  const runSend = async () => {
-
-    // Lets send this transaction!
     await estimate();
     const sendResult = await send();
     console.log('Send Data:', sendResult);
@@ -65,7 +53,6 @@ function App() {
       alert(
         'There was a problem trying to send your transaction. This can happen for a variety of reasons, but the most common problems are bad blockchain conditions or an out of date estimate.\n\nPlease try to estimate, then send again.'
       );
-
       return;
     }
 
@@ -81,13 +68,19 @@ function App() {
         </p>
         <p className="App-wallet-address">{etherspotAddress}</p>
         <EtherspotBatches
+          paymaster={{
+            url: "https://arka.etherspot.io",
+            api_key: "gasless_mint_demo",
+            context: { mode: "sponsor" }
+          }}
         >
           <EtherspotBatch chainId={80001}>
             <EtherspotContractTransaction 
             contractAddress={'0x09C84f517E3Ff7347b2902b3055Bb4ac90745f3b'}
             abi={['function mint(address)']}
             methodName={'mint'}
-            params={['0xa8430797A27A652C03C46D5939a8e7698491BEd6']}
+            // REPLACE_HERE
+            params={['0x35D2ae3D5F55eD223f471aD660baF89eCDEb13E0']}
             value={'0'} 
             >
               <p className="App-info">
@@ -139,7 +132,7 @@ function App() {
               )}
 
               <div className="App-form-buttons-control">
-                <button onClick={runSend} color="success">
+                <button onClick={whitelistAddressAndMintNFT} color="success">
                   Mint NFT
                 </button>
               </div>
