@@ -14,12 +14,13 @@ import { utils } from 'ethers';
 function App() {
   const etherspotAddress = useWalletAddress();
   const { estimate, send } = useEtherspotTransactions();
-  const [address, setAddress] = useState(
-    '0x0000000000000000000000000000000000000000'
+  const [mintAddress, setMintAddress] = useState(
+    '0x8cE200CECa9753aaE27C18f613C707A551313927'
   );
-  console.log(address);
 
-  console.log(address);
+  console.log("etherspotAddress: ", etherspotAddress)
+  console.log("mintAddress: ",mintAddress);
+
 
   const [latestEstimationData, setLatestEstimationData] = useState(null);
   const [latestSendData, setLatestSendData] = useState(null);
@@ -45,13 +46,15 @@ function App() {
 
 	  console.log('Value returned: ', returnedValue);
 
+    console.log('mintAddress', mintAddress);
+
     await estimate();
     const sendResult = await send();
     console.log('Send Data:', sendResult);
 
     if (JSON.stringify(sendResult).includes('reverted')) {
       alert(
-        'There was a problem trying to send your transaction. This can happen for a variety of reasons, but the most common problems are bad blockchain conditions or an out of date estimate.\n\nPlease try to estimate, then send again.'
+        'There was a problem trying to send your transaction. This can happen for a variety of reasons, but the most common problems are bad blockchain conditions or an out of date estimate.\n\nPlease try to send it again.'
       );
       return;
     }
@@ -63,10 +66,6 @@ function App() {
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        <p className="App-wallet-address-label">
-          Your Etherspot wallet address (Polygon Mumbai testnet)
-        </p>
-        <p className="App-wallet-address">{etherspotAddress}</p>
         <EtherspotBatches
           paymaster={{
             url: "https://arka.etherspot.io",
@@ -80,26 +79,20 @@ function App() {
             abi={['function mint(address)']}
             methodName={'mint'}
             // REPLACE_HERE
-            params={['0x35D2ae3D5F55eD223f471aD660baF89eCDEb13E0']}
+            params={[mintAddress]}
             value={'0'} 
             >
-              <p className="App-info">
-                This is the destination blockchain address. Always remember that
-                the blockchain address you are sending to must ALWAYS be on the
-                SAME blockchain. In our case, <b>Polygon Testnet</b>, also known
-                as <b>Mumbai</b>.
-              </p>
 
               <div className="App-form-control">
                 <label className="App-label" htmlFor="addressInput">
-                  Destination Address on Polygon Testnet (aka Mumbai)
+                 Address on Mumbai to mint NFT:
                 </label>
                 <input
                   className="App-text-input"
                   id="addressInput"
                   type="text"
-                  value={address}
-                  onChange={e => setAddress(e.target.value)}
+                  value={mintAddress}
+                  onChange={e => setMintAddress(e.target.value)}
                 />
               </div>
 
@@ -123,7 +116,7 @@ function App() {
                   Your transaction will soon appear{' '}
                   <a
                     target="_blank"
-                    href={`https://mumbai.polygonscan.com/address/${etherspotAddress}#internaltx`}
+                    href={`https://mumbai.polygonscan.com/address/${mintAddress}#nfttransfers`}
                   >
                     here
                   </a>
